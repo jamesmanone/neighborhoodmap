@@ -5,7 +5,7 @@
   "description": "FSND neighborhood map project",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon gulp --watch"
+    "dev": "concurrently \"gulp watch\" \"nodemon\" "
   },
   "author": "James Martin",
   "license": "ISC",
@@ -13,6 +13,8 @@
     "express": "^4.15.3"
   },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-uglify": "^3.0.0"
   }
 }
