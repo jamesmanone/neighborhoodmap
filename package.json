@@ -1,0 +1,18 @@
+{
+  "name": "fsnd-project4",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FSND neighborhood map project",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon gulp --watch"
+  },
+  "author": "James Martin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
