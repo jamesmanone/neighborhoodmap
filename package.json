@@ -5,15 +5,19 @@
   "description": "FSND neighborhood map project",
   "main": "server.js",
   "scripts": {
-    "dev": "concurrently \"gulp watch\" \"nodemon\" "
   },
   "author": "James Martin",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "node-fetch": "^1.7.0",
+    "node-yelp-fusion": "^1.0.4",
+    "yelp-fusion": "^1.0.3"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
     "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.1",
     "gulp-uglify": "^3.0.0"
   }

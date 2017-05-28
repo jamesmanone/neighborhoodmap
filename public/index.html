@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyDQ0Et1pqS6-wi0xKwSVEpiwDDRx6kA1gU&v=3"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="app" data-bind="with: ListViewModel">
+    <div class="hamburger-bar">
+      <button class="hamburger">&#x2630;</button>
+    </div>
+    <div class="list-view">
+      <div class="filter">
+          <input type="text" id="filter">
+          <button id="filter-submit">filter</button>
+      </div>
+      <ul class="places" data-bind="foreach: locationList">
+        <li class="place">
+          <span class="id" data-bind="text: $data.id, click: listClick"></span>
+          <div class="title" data-bind="text: $data.title, click: listClick"></div>
+          <!-- ko if: selectedLocation() == $data -->
+          <div class="info-slide">
+            <button data-bind="click: $root.openFlickr">Flickr</button>
+            <button data-bind="click: $root.openWiki">Wikipedia</button>
+            <button data-bind="click: $root.openYelp">yelp!</button>
+          </div>
+          <!-- /ko -->
+        </li>
+      </ul>
+    </div>
+
+    <!-- ko if: $root.modalOpen() -->
+      <div class="window-background">
+
+      </div>
+      <div class="window-content" data-bind="with: selectedLocation(), event: {scroll: $root.endlessFlickr}">
+        <div class="close">
+          <button class="close-btn" data-bind="click: $root.closeModal">&#x2716;</button>
+        </div>
+        <div class="flickr" data-bind="if: $root.flickr()">
+          <h2 data-bind="if: flickrUrls()[0] != 'error'">Photos from Flickr</h2>
+          <h2 data-bind="if: flickrUrls()[0] == 'error'">There are no Flickr photos at this time</h2>
+          <ul class="flickr-img" data-bind="foreach: flickrUrls()">
+            <li>
+              <img data-bind="attr: {src: $data}">
+            </li>
+          </ul>
+          <div id="loading">
+
+          </div>
+        </div>
+
+        <div data-bind="if: $root.wiki()">
+          <div class="wiki" data-bind="html: wikiText">
+
+          </div>
+        </div>
+        <div class="yelp" data-bind="if: $root.yelp()">
+          <div class="yelp-data" data-bind="with: yelpData()">
+            <a data-bind="attr: {href: url}"><img width="300" src="/stars/yelplogo.png" alt="Yelp logo"></a>
+            <div class="yelp-image">
+              <img width="300" data-bind="attr: {src: img}" alt="Image from yelp">
+            </div>
+          <br>
+            <h1 data-bind="text: name"></h1>
+            <img class="yelp-rating" width="100" data-bind="attr: {src: $parent.yelpRating}">
+            Based on <span data-bind="text: reviews"></span> reviews.
+
+          </div>
+          <div class="yelp-reviews" data-bind="with: selectedLocation()">
+            <ul class="reviews" data-bind="foreach: yelpReviews()">
+              <li class="review" data-bind="click: openYelpReview">
+                <img data-bind="attr: {src: $data.ratingImg, alt: $data.rating}"><br><br>
+                <span data-bind="text: $data.text"></span><br><br>
+                <em>-<span data-bind="text: $data.user.name"></span></em>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    <!-- /ko -->
+
+    <div class="map" id="map">
+    </div>
+
+  </div>
+
+</body>
+</html>

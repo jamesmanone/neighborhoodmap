@@ -1,8 +1,9 @@
-// jshint esversion: 6
+
 const gulp = require('gulp');
 const path = require('path');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
+const babel = require('gulp-babel');
 
 gulp.task('copyHtml', () => {
   gulp.src('./src/*.html')
@@ -11,22 +12,26 @@ gulp.task('copyHtml', () => {
 
 gulp.task('copyCss', () => {
   gulp.src('./src/css/*.css')
-    .pipe(gulp.dest('./public/css/'));
+    .pipe(gulp.dest('./public/'));
 });
 
 gulp.task('mangleJs', () => {
   gulp.src([
+    './src/js/app.js',
     './src/js/model.js',
-    './src//jsmap.js',
-    './src/js/services.js',
-    './src/js/app.js'
+    './src/js/map.js',
+    './src/js/init.js'
   ])
-    .pipe(concat())
-    .pipe(uglify())
-    .pipe(gulp.dest('./public/js/app.js'));
+    // .pipe(babel())
+    .pipe(concat('app.js'))
+    // .pipe(uglify())
+    .pipe(gulp.dest('./public/'));
 });
 
+gulp.task('default', ['copyHtml', 'copyCss', 'mangleJs']);
+
 gulp.task('watch', () => {
+  console.log('Gulp watching for changes...');
   gulp.watch('./src/*.html', ['copyHtml']);
   gulp.watch('./src/css/*.css', ['copyCss']);
   gulp.watch('./src/js/*.js', ['mangleJs']);
