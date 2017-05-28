@@ -16,11 +16,11 @@
     </div>
     <div class="list-view">
       <div class="filter">
-          <input type="text" id="filter">
+          <input type="text" id="filter" data-bind="textInput: filterText">
           <button id="filter-submit">filter</button>
       </div>
       <ul class="places" data-bind="foreach: locationList">
-        <li class="place">
+        <li class="place" data-bind="visible: $data.visible">
           <span class="id" data-bind="text: $data.id, click: listClick"></span>
           <div class="title" data-bind="text: $data.title, click: listClick"></div>
           <!-- ko if: selectedLocation() == $data -->
@@ -61,6 +61,9 @@
           </div>
         </div>
         <div class="yelp" data-bind="if: $root.yelp()">
+          <div data-bind="if: !yelpData()">
+            <h1 class="yelp-loading">Loading...</h1>
+          </div>
           <div class="yelp-data" data-bind="with: yelpData()">
             <a data-bind="attr: {href: url}"><img width="300" src="/stars/yelplogo.png" alt="Yelp logo"></a>
             <div class="yelp-image">
@@ -73,7 +76,7 @@
 
           </div>
           <div class="yelp-reviews" data-bind="with: selectedLocation()">
-            <ul class="reviews" data-bind="foreach: yelpReviews()">
+            <ul class="reviews" data-bind="foreach: yelpReviews">
               <li class="review" data-bind="click: openYelpReview">
                 <img data-bind="attr: {src: $data.ratingImg, alt: $data.rating}"><br><br>
                 <span data-bind="text: $data.text"></span><br><br>

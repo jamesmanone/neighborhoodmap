@@ -25,15 +25,6 @@ body {
 
 .hamburger-bar {
   display: none;
-  background: linear-gradient(to right, #123b42, #0f434c, #123b42);
-}
-
-.hamburger {
-  background-color: #0f434c;
-  color: white;
-  border-style: solid;
-  border-width: thin;
-  border-radius: 5px;
 }
 
 .map {
@@ -121,7 +112,7 @@ body {
   width: 100%;
   height: 100%;
   z-index: 2;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5)
 }
 
 .window-content {
@@ -130,7 +121,7 @@ body {
   border-width: 3px;
   border-radius: 5px;
   z-index: 3;
-  height: 80%;
+  height: 90%;
   width: 75%;
   overflow: auto;
   position: absolute;
@@ -141,16 +132,15 @@ body {
 
 .close {
   position: fixed;
+  z-index: 5;
   right: calc(12.5% + 5px);
   top: calc(10% + 5px);
-  z-index: 5;
 }
 
 .close-btn {
   color: black;
   background-color: red;
   border: 2px solid black;
-  border-radius: 3px;
 }
 
 .flickr {
@@ -173,29 +163,26 @@ body {
   padding: 5px;
 }
 
-.yelp {
-  position: relative;
-}
-
 .yelp-image {
   position: absolute;
-  right: 10px;
   top: 10px;
+  right: 10px;
   height: auto;
+  overflow: visible;
 }
 
 .reviews {
   list-style: none;
+  margin: auto;
   padding: 0;
-  margin: 0;
 }
 
 .review {
-  padding: 5px;
   border-style: solid;
-  border-width: thin;
-  border-radius: 6px;
-  margin: 4px auto 4px auto;
+  border-width: medium;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 5px auto 5px auto;
   cursor: pointer;
 }
 
@@ -209,6 +196,17 @@ body {
   right: 0;
   z-index: 1;
   text-shadow: 0 0 2px white;
+}
+
+.center {
+  position: absolute;
+  width: 100%;
+}
+
+.centered {
+  width: 48px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 caption {
@@ -232,10 +230,18 @@ img {
   }
 
   .hamburger-bar {
+    display: block;
+    background-color: #123b42;
     width: 10%;
-    height: 100%;
-    position: absolute;
-    left: 0;
+  }
+
+  .hamburger {
+    background-color: #123b42;
+    width: 100%;
+    margin: auto;
+    border-style: solid;
+    border-width: thin;
+    border-radius: 3px;
   }
 
   .list-view {

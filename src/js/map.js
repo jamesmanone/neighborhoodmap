@@ -9,7 +9,6 @@ function initMap() {
 
 
 function makeMarkers() {
-  const markers = [];
   for(var i=0; i<locations.length; i++) {
     var position = locations[i].location;
     var title = locations[i].title;

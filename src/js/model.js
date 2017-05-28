@@ -71,6 +71,7 @@ class Location {
   this.title = ko.observable(data.title);
   this.location = ko.observable(data.location);
   this.id = ko.observable(data.id);
+  this.visible = ko.observable(true);
   this.wikiText = ko.observable();
   this.flickrUrls = ko.observableArray();
   this.yelpData = ko.observable();

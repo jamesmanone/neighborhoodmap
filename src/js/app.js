@@ -6,6 +6,7 @@ $('body').hide();
 
 function ListViewModel() {
   this.markers = [];
+  this.filterText = ko.observable();
 
   // Observable array for POI's
   this.locationList = ko.observableArray();
@@ -80,6 +81,34 @@ function ListViewModel() {
     this.flickr(false);
     this.wiki(false);
     this.yelp(false);
+  };
+
+  this.filterText.subscribe(text => this.filter(text));
+
+  this.filter = (text) => {
+    text = text.toLowerCase();
+    console.log('change');
+    if(text) {
+      this.markers.forEach(marker => {
+        if(marker.title.toLowerCase().indexOf(text) === -1) {
+          marker.setVisible(false);
+
+        } else {
+          marker.setVisible(true);
+        }
+      });
+      this.locationList().forEach(location => {
+        if(location.title().toLowerCase().indexOf(text) === -1) {
+          location.visible(false);
+        } else {
+          location.visible(true);
+        }
+      });
+    } else {
+      this.markers.forEach(marker => marker.setVisible(true));
+      this.locationList().forEach(location => location.visible(true));
+    }
+    return true;
   };
 
   // Handles loading [additional] photos from flickr
