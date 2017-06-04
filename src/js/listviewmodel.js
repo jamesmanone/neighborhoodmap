@@ -1,9 +1,5 @@
 
-$('body').hide();
-
-
 function ListViewModel() {
-  this.markers = [];
 
   // Brings input text into viewmodel
   this.filterText = ko.observable();
@@ -29,21 +25,13 @@ function ListViewModel() {
   // Opens InfoWindow and info-slide on click of list item
   // also closes API modal. Handles a click on already selected
   // location to close info-slide.
-  this.listClick = (location) => {
+  this.listClick = location => {
     if(this.selectedLocation() != location) {
       this.selectedLocation(location);
+      googleMap.setMarkerFromList(location);
     } else {
       this.selectedLocation(null);
-    }
-  };
-
-  // Sets selectedLocation based on calls from maps
-  this.setSelectedLocation = (marker) => {
-    const title = marker.title;
-    for (let i = 0; i < this.locationList().length; i++) {
-      if(this.locationList()[i].title() == title) {
-        this.selectedLocation(this.locationList()[i]);
-      }
+      googleMap.setMarkerFromList(null);
     }
   };
 
@@ -148,32 +136,19 @@ function ListViewModel() {
     }
   };
 
+  // Opens yelp review on click in new tab
   this.openYelpReview = review => {
     window.open(review.url, '_blank');
   };
 
-  // Updates infowindow when selectedLocation changes
-  this.selectedLocation.subscribe(location => {
-    if(!infowindow.marker && location) {
-      this.markers.forEach(marker => {
-        if(marker.title === location.title()) {
-          openInfoWindow(marker);
-        }
-      });
-    } else if(location === null) {
-      infowindow.close();
-      infowindow.marker.setAnimation(null);
-      infowindow.marker = null;
-    } else if(location.title() === infowindow.marker.title) {
-      return;
-    } else {
-      this.markers.forEach(marker => {
-        if(marker.title === location.title()) {
-          openInfoWindow(marker);
-        }
-      });
-    }
-  });
+  // // Updates infowindow when selectedLocation changes
+  // this.selectedLocation.subscribe(location => {
+  //   if(location.title() === googleMap.infowindow.marker.title) {
+  //     return;
+  //   } else {
+  //     googleMap.setMarkerFromList(location);
+  //   }
+  // });
 
   // Toggle list view on menu button click
   this.toggleList = () => {

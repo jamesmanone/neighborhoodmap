@@ -66,12 +66,13 @@ class Location {
   this.yelpReviews = ko.observableArray();
   }
 
-  // Gets Flickr image search results
+  // Gets Flickr image search results. Takes page number as input.
   getFlickr(page) {
     return new Promise((resolve, reject) => {
       var clock = setTimeout(() => reject('Request Timed out'), 10000);
       fetch(`https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&api_key=0e1c35e1a3ae55371b56a4f54befe18e&radius=1&content_type=1&per_page=10&page=${page}&text=${this.title().replace(/\s+/g, '+')}&lat=${this.location().lat}&lon=${this.location().lng}`)
       .then(res => res.json())
+      .catch(() => reject('There was a problem contancting Flickr'))
       .then(res => {
         resolve(res);
         clearTimeout(clock);
@@ -90,7 +91,8 @@ class Location {
     })
     .then(() => {
       Promise.all(promises)
-      .then(resolve);
+      .then(resolve)
+      .catch(e => reject('Unable to fetch photos'));
     });
   }
 

@@ -14,7 +14,9 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.4.1",
     "gulp-concat": "^2.6.1",
+    "gulp-htmlmin": "^3.0.0",
     "gulp-uglify": "^3.0.0",
     "pump": "^1.0.2",
     "uglify-es": "^3.0.15"

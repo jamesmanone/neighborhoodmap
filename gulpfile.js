@@ -2,19 +2,22 @@ const uglifyes = require('uglify-es');
 const gulp = require('gulp');
 const path = require('path');
 const concat = require('gulp-concat');
-const uglify = require('gulp-uglify');
 const pump = require('pump');
 const composer = require('gulp-uglify/composer');
+const cleanCSS = require('gulp-clean-css');
+const htmlmin = require('gulp-htmlmin');
 
 const minify = composer(uglifyes, console);
 
 gulp.task('copyHtml', () => {
   gulp.src('./src/*.html')
+    .pipe(htmlmin({collapseWhitespace: true}))
     .pipe(gulp.dest('./public/'));
 });
 
 gulp.task('copyCss', () => {
   gulp.src('./src/css/*.css')
+    .pipe(cleanCSS())
     .pipe(gulp.dest('./public/'));
 });
 
