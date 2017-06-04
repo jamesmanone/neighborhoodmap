@@ -17,7 +17,7 @@ gulp.task('copyCss', () => {
 
 gulp.task('mangleJs', () => {
   gulp.src([
-    './src/js/app.js',
+    './src/js/listviewmodel.js',
     './src/js/model.js',
     './src/js/map.js',
     './src/js/init.js'

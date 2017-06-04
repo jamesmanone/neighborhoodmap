@@ -1,11 +1,11 @@
 
 $('body').hide();
-// flickr api key 0e1c35e1a3ae55371b56a4f54befe18e
-//flickr secret 82d18bbda2328dac
 
 
 function ListViewModel() {
   this.markers = [];
+
+  // Brings input text into viewmodel
   this.filterText = ko.observable();
 
   // Observable array for POI's
@@ -29,12 +29,9 @@ function ListViewModel() {
   // Opens InfoWindow and info-slide on click of list item
   // also closes API modal. Handles a click on already selected
   // location to close info-slide.
-  this.listClick = (loc) => {
-    var index = loc.id() - 1;
-    this.closeModal();
-    if(this.selectedLocation() != loc) {
-      this.selectedLocation(loc);
-      openInfoWindow(self.markers[index]);
+  this.listClick = (location) => {
+    if(this.selectedLocation() != location) {
+      this.selectedLocation(location);
     } else {
       this.selectedLocation(null);
     }
@@ -54,8 +51,8 @@ function ListViewModel() {
     this.wiki(false);
     this.yelp(false);
     this.flickr(true);
-    if(!selectedLocation().flickrUrls().length) {
-      moarFlickr();
+    if(!this.selectedLocation().flickrUrls().length) {
+      this.moarFlickr();
     }
   };
 
@@ -63,8 +60,9 @@ function ListViewModel() {
     this.flickr(false);
     this.yelp(false);
     this.wiki(true);
-    if(!selectedLocation().wikiText()) {
-      selectedLocation().getWiki();
+    if(!this.selectedLocation().wikiText()) {
+      this.selectedLocation().getWiki()
+      .catch(msg => document.getElementById('wiki-message').innerHTML = msg);
     }
   };
 
@@ -72,8 +70,8 @@ function ListViewModel() {
     this.flickr(false);
     this.wiki(false);
     this.yelp(true);
-    if(!selectedLocation().yelpData()) {
-      selectedLocation().getYelp();
+    if(!this.selectedLocation().yelpData()) {
+      this.selectedLocation().getYelp();
     }
   };
 
@@ -83,11 +81,12 @@ function ListViewModel() {
     this.yelp(false);
   };
 
+  // Triggers filter when text in input box changes
   this.filterText.subscribe(text => this.filter(text));
 
+  // Filters POI's
   this.filter = (text) => {
     text = text.toLowerCase();
-    console.log('change');
     if(text) {
       this.markers.forEach(marker => {
         if(marker.title.toLowerCase().indexOf(text) === -1) {
@@ -116,15 +115,15 @@ function ListViewModel() {
     if(!this.loading) {
       // this.loading is a stop to prevent additional requests from firing before the current one resolves
       this.loading = true;
-      let page = Math.round(selectedLocation().flickrUrls().length/10) + 1;
+      let page = Math.round(this.selectedLocation().flickrUrls().length/10) + 1;
       let loadDiv = document.getElementById('loading');
-      if(!selectedLocation().flickrUrls().length) {
+      if(!this.selectedLocation().flickrUrls().length) {
         loadDiv.innerHTML = 'Loading flickr photos';
       } else {
         loadDiv.innerHTML = 'Loading more photos';
       }
-      selectedLocation().getFlickr(page)
-      .then(data => selectedLocation().getFlickrUrls(data))
+      this.selectedLocation().getFlickr(page)
+      .then(data => this.selectedLocation().getFlickrUrls(data))
       .then(() => {
         loadDiv.innerHTML = '';
       })
@@ -142,7 +141,7 @@ function ListViewModel() {
     let modal = event.target;
     if(this.flickr()) {
       if(modal.scrollTop >= (modal.scrollHeight - modal.offsetHeight - 400)) {
-        moarFlickr();
+        this.moarFlickr();
       }
     } else if(this.loading){
     }
@@ -152,11 +151,47 @@ function ListViewModel() {
     window.open(review.url, '_blank');
   };
 
+  // Updates infowindow when selectedLocation changes
+  this.selectedLocation.subscribe(location => {
+    if(!infowindow.marker && location) {
+      this.markers.forEach(marker => {
+        if(marker.title === location.title()) {
+          openInfoWindow(marker);
+        }
+      });
+    } else if(location === null) {
+      infowindow.close();
+      infowindow.marker.setAnimation(null);
+      infowindow.marker = null;
+    } else if(location.title() === infowindow.marker.title) {
+      return;
+    } else {
+      this.markers.forEach(marker => {
+        if(marker.title === location.title()) {
+          openInfoWindow(marker);
+        }
+      });
+    }
+  });
+
+  // Toggle list view on menu button click
+  this.toggleList = () => {
+    var viewportWidth = window.innerWidth;
+    var mapView = document.getElementById('map');
+    var target = document.getElementsByClassName('list-view')[0];
+    if(target.style.display === 'block') {
+      target.style.display = 'none';
+      mapView.style.display = 'block';
+    } else {
+      target.style.display = 'block';
+      if(viewportWidth < 750) {
+        mapView.style.display = 'none';
+      }
+    }
+  };
+
 }
 
-// jshint esversion: 6
-// yelp cid: hmmm-ZMgM4TH_YkPPnRJtg
-// yelp secret: ZBFQ80sXYXaq997caeHbmF6ELHoPN7YCLgr6kfOIEwdMM15I0WA1v4oIB276nQBP
 
 
 const locations = [
@@ -287,17 +322,12 @@ class Location {
       const clock = setTimeout(() => reject('The request timed out'), 7000);
       const url = `/wiki?page=${this.title()}`;
       fetch(url)
-      .then(res => {
-        console.log(res);
-        return res;
-      })
-      .catch(e => console.log(e))
+      .catch(e => reject('Could not contact Wikipedia'))
       .then(res => res.json())
       .then(res => {
-        console.log(res);
         let article = res.parse.text['*'];
         if(!article) {
-          reject('No wikipedia article');
+          reject('<h2>Panic! The impossible happened.<br> <small>No articles? I must have weird taste</small></h2>');
         } else {
           // Remove internal links
           article = article.replace(/<a[^>]+>([^<]+)<\/a>/g, '$1');
@@ -320,17 +350,16 @@ class Location {
           resolve();
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        reject('<h2>Panic! The impossible happened.<br> <small>No articles? I must have weird taste</small></h2>');
+      });
     });
   }
 
   getYelp() {
     fetch(`/yelp?query=${this.title()}&lat=${this.location().lat}&lng=${this.location().lng}`)
     .then(res => res.json())
-    .then(res => {
-      console.log(res);
-      return res;
-    })
     .then(res => {
       this.yelpRating(this.starsSrc(res.rating));
       return res;
@@ -394,57 +423,80 @@ class Location {
 }
 
 
+var infowindow = new google.maps.InfoWindow();
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
-    center: new google.maps.LatLng(27.7714125, -82.6459125),
+    center: new google.maps.LatLng(27.772141, -82.637844),
     zoom: 14
   });
 }
 
 
 function makeMarkers() {
-  for(var i=0; i<locations.length; i++) {
-    var position = locations[i].location;
-    var title = locations[i].title;
-    var id = locations[i].id;
-    var marker = new google.maps.Marker({
+  var bounds = new google.maps.LatLngBounds();
+  for(let i=0; i<locations.length; i++) {
+    let position = locations[i].location;
+    let title = locations[i].title;
+    let id = locations[i].id;
+    let marker = new google.maps.Marker({
       title: title,
       position: position,
       map: map,
       animation: google.maps.Animation.DROP,
       id: id
     });
-    markers.push(marker);
+    viewModel.markers.push(marker);
     ears(marker);
+    bounds.extend(position);
   }
+  map.fitBounds(bounds);
 }
 
 function ears(marker) {
-  marker.addListener('click', function() {
-    openInfoWindow(this);
-    setSelectedLocation(this);
+  marker.addListener('click', () => {
+    syncList(marker);
+    openInfoWindow(marker);
   });
 }
 
-var infowindow = new google.maps.InfoWindow();
+
 
 function openInfoWindow(marker) {
   if(infowindow.marker != marker) {
     infowindow.marker = marker;
-    infowindow.setContent(infowindow.marker.title);
-    infowindow.addListener('closeclick', function() {
+    viewModel.markers.forEach(marker => marker.setAnimation(null));
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(() => marker.setAnimation(null), 4950);
+    infowindow.setContent(marker.title);
+    infowindow.addListener('closeclick', () => {
+      infowindow.marker.setAnimation(null);
       infowindow.marker = null;
-      selectedLocation(null);
+      viewModel.selectedLocation(null);
     });
     infowindow.open(map, marker);
   }
 }
 
 
-  const viewModel = new ListViewModel(locations);
+
+function syncList(marker) {
+  viewModel.locationList().forEach(location => {
+    if(location.title() === marker.title) {
+      viewModel.selectedLocation(location);
+    }
+  });
+}
+
+
+const viewModel = new ListViewModel();
+
 // Set everything in motion
-$(function() {
+$(() => {
+  let viewportWidth = window.innerWidth;
+  if(viewportWidth > 750) {
+    document.getElementsByClassName('list-view')[0].style.display = 'block';
+  }
   ko.applyBindings(viewModel);
   initMap();
   makeMarkers();

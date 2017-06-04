@@ -1,6 +1,3 @@
-// jshint esversion: 6
-// yelp cid: hmmm-ZMgM4TH_YkPPnRJtg
-// yelp secret: ZBFQ80sXYXaq997caeHbmF6ELHoPN7YCLgr6kfOIEwdMM15I0WA1v4oIB276nQBP
 
 
 const locations = [
@@ -131,17 +128,12 @@ class Location {
       const clock = setTimeout(() => reject('The request timed out'), 7000);
       const url = `/wiki?page=${this.title()}`;
       fetch(url)
-      .then(res => {
-        console.log(res);
-        return res;
-      })
-      .catch(e => console.log(e))
+      .catch(e => reject('Could not contact Wikipedia'))
       .then(res => res.json())
       .then(res => {
-        console.log(res);
         let article = res.parse.text['*'];
         if(!article) {
-          reject('No wikipedia article');
+          reject('<h2>Panic! The impossible happened.<br> <small>No articles? I must have weird taste</small></h2>');
         } else {
           // Remove internal links
           article = article.replace(/<a[^>]+>([^<]+)<\/a>/g, '$1');
@@ -164,17 +156,16 @@ class Location {
           resolve();
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        reject('<h2>Panic! The impossible happened.<br> <small>No articles? I must have weird taste</small></h2>');
+      });
     });
   }
 
   getYelp() {
     fetch(`/yelp?query=${this.title()}&lat=${this.location().lat}&lng=${this.location().lng}`)
     .then(res => res.json())
-    .then(res => {
-      console.log(res);
-      return res;
-    })
     .then(res => {
       this.yelpRating(this.starsSrc(res.rating));
       return res;

@@ -14,33 +14,89 @@ body {
   box-sizing: border-box;
 }
 
+.btn-primary {
+  background-color: rgba(61, 78, 104, 0.1);
+  font-weight: 900;
+  color: #3d4e68;
+  border: thin solid #3d4e68;
+  border-radius: 7px;
+}
+
+.close-btn {
+  background-color: rgba(145, 7, 7, 0.1);
+  color: #910707;
+  font-weight: 900;
+  border: thin solid #910707;
+  border-radius: 7px;
+}
+
+.btn-burger {
+  font-size: 1.5em;
+  background-color: black;
+  color: #999;
+  border: none;
+  /* The below was taken from https://css-tricks.com/centering-css-complete-guide/ */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+nav {
+  width: 100%;
+  height: 3em;
+  background-color: black;
+  color: white;
+  padding: 3px;
+  position: relative;
+}
+
+.project-name {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ddd;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  display: inline-block;
+  padding: 0;
+  margin: 0 0 0 10px;
+}
+
+.filter {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
 .app {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 3em);
   margin: 0;
   padding: 0;
   display: flex;
   flex-wrap: nowrap;
-}
-
-.hamburger-bar {
-  display: none;
+  overflow: hidden;
 }
 
 .map {
-  width: 80%;
+  width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
 .list-view {
-  width: 20%;
+  display: none;
+  width: 30%;
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #123b42;
-  background: linear-gradient(to right, #123b42, #0f434c, #123b42);
+  background-color: #222;
   border-style: solid;
   border-width: 0 4px 0 0;
   overflow-y: scroll;
@@ -64,10 +120,13 @@ body {
   width: 100%;
   margin: 0;
   font-size: 18px;
-  /*border-style: solid;*/
-  /*border-width: 0 0 1px 0;*/
   padding: 5px 0 5px 5px;
   list-style: none;
+}
+
+.place:hover {
+  transition-property: background-color;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .place:first-child {
@@ -76,7 +135,7 @@ body {
 
 .id {
   background-color: black;
-  color: white;
+  color: #999;
   border-style: solid;
   border-color: black;
   border-width: 3px;
@@ -89,7 +148,7 @@ body {
 }
 
 .title {
-  color: white;
+  color: #ddd;
    background-color: rgba(0, 0, 0, 0.3);
   margin: 0;
   width: 85%;
@@ -111,7 +170,7 @@ body {
   position: absolute;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 3;
   background-color: rgba(0, 0, 0, 0.5)
 }
 
@@ -120,7 +179,7 @@ body {
   border-style: solid;
   border-width: 3px;
   border-radius: 5px;
-  z-index: 3;
+  z-index: 4;
   height: 90%;
   width: 75%;
   overflow: auto;
@@ -137,12 +196,6 @@ body {
   top: calc(10% + 5px);
 }
 
-.close-btn {
-  color: black;
-  background-color: red;
-  border: 2px solid black;
-}
-
 .flickr {
   list-style: none;
   padding: 0;
@@ -154,7 +207,13 @@ body {
   list-style: none;
   padding: 0;
   margin: 0;
-  width: 100%
+  width: 100%;
+  position: absolute;
+}
+
+.flickr-img-item {
+  width: 100%;
+  padding: 0;
 }
 
 .wiki {
@@ -163,18 +222,24 @@ body {
   padding: 5px;
 }
 
+.yelp-data {
+  width: 100%;
+  display: block;
+}
+
 .yelp-image {
-  position: absolute;
+  /*position: absolute;
   top: 10px;
-  right: 10px;
-  height: auto;
-  overflow: visible;
+  right: 10px;*/
+  max-height: 100%;
+  float: right;
 }
 
 .reviews {
   list-style: none;
   margin: auto;
   padding: 0;
+  clear: both;
 }
 
 .review {
@@ -188,14 +253,6 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
-}
-
-.attr {
-  position: relative;
-  bottom: 0;
-  right: 0;
-  z-index: 1;
-  text-shadow: 0 0 2px white;
 }
 
 .center {
@@ -224,27 +281,49 @@ img {
   max-width: 100%;
 }
 
-@media only screen and (max-width: 600px) {
-  .map {
-    width: 90%;
+.infowindow {
+  visibility: hidden;
+}
+
+@media screen and (max-width: 750px) {
+
+  h2 {
+    font-size: 1em;
   }
 
-  .hamburger-bar {
-    display: block;
-    background-color: #123b42;
-    width: 10%;
+  .nav-item {
+    margin-right: 0;
   }
 
-  .hamburger {
-    background-color: #123b42;
-    width: 100%;
-    margin: auto;
-    border-style: solid;
-    border-width: thin;
-    border-radius: 3px;
+  .filter:focus {
+    width: calc(100% - 20px);
+  }
+
+  .btn-burger {
+    height: 1.5em;
   }
 
   .list-view {
-    display: none;
+    position: relative;
+    width: 100%;
   }
+
+  .window-content {
+    width: 100%;
+    height: calc(100% - 3em);
+    top: 3em;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  }
+
+  .close {
+    right: 5px;
+    top: calc(3em + 5px)
+  }
+
+  .yelp-image {
+    float: none;
+  }
+
 }

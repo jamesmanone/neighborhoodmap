@@ -6,17 +6,14 @@ const Yelp = require('node-yelp-fusion');
 const yelp = new Yelp({id:'hmmm-ZMgM4TH_YkPPnRJtg', secret: 'ZBFQ80sXYXaq997caeHbmF6ELHoPN7YCLgr6kfOIEwdMM15I0WA1v4oIB276nQBP'});
 
 const app = express();
-// const token = yelp.accessToken('hmmm-ZMgM4TH_YkPPnRJtg', 'ZBFQ80sXYXaq997caeHbmF6ELHoPN7YCLgr6kfOIEwdMM15I0WA1v4oIB276nQBP')
-// .catch(e => {
-  // console.log(e);
-// });
-// const yelpClient = yelp.client(token);
 
 // Set static dir
 app.use(express.static('public'));
 
+
 app.get('/', (req, res) => {
-  res.send('Error: invalid path');
+  console.log(req);
+  res.send('<h1>Public Folder Error</h1>');
   console.log('Error reaching static path');
 });
 
@@ -40,15 +37,12 @@ app.get('/yelp', (req, res) => {
       url: data.url
     };
   })
-  .then(obj => res.send(obj))
-  .then(obj => console.log(obj));
+  .then(obj => res.send(obj));
 });
 
 app.get('/yelpreviews/:bizid', (req, res) => {
-  console.log(req.params.bizid);
   yelp.reviews(req.params.bizid)
   .then(response => {
-    console.log(response);
     res.send(response);
   })
   .catch(e => console.error(e));
@@ -64,5 +58,7 @@ app.get('/wiki', (req, res) => {
 
 // Start server
 app.listen(3000, () => {
+  let timestamp = new Date();
+  console.log(`Server started at ${timestamp}`);
   console.log('Listning on http://localhost:3000');
 });

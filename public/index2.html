@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <title>Saint Petersburg, FL</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ0Et1pqS6-wi0xKwSVEpiwDDRx6kA1gU&v=3"></script>
+    <script src="/app.js"></script>
+  </head>
+  <body>
+    <nav>
+      <button class="btn-burger" id="burger">&#x2630;</button>
+      <input class="filter" type="text" id="filter" placeholder="Filter list" data-bind="textInput: filterText">
+    </nav>
+    <div class="app">
+      <div class="list-view">
+        <ul class="places" data-bind="foreach: locationList">
+          <li class="place" data-bind="visible: $data.visible">
+            <div class="id" data-bind="text: $data.id, click: $root.listClick"></div>
+            <div class="title" data-bind="text: $data.title, click: $root.listClick"></div>
+            <div data-bind="if: $root.selectedLocation() == $data">
+              <div class="info-slide">
+                <button class="btn-primary" data-bind="click: $root.openFlickr">Flickr</button>
+                <button class="btn-primary" data-bind="click: $root.openWiki">Wikipedia</button>
+                <button class="btn-primary" data-bind="click: $root.openYelp">Yelp</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="map" id="map">
+
+      </div>
+    </div>
+  </body>
+</html>

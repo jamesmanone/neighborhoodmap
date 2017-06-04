@@ -1,11 +1,11 @@
 
 $('body').hide();
-// flickr api key 0e1c35e1a3ae55371b56a4f54befe18e
-//flickr secret 82d18bbda2328dac
 
 
 function ListViewModel() {
   this.markers = [];
+
+  // Brings input text into viewmodel
   this.filterText = ko.observable();
 
   // Observable array for POI's
@@ -29,12 +29,9 @@ function ListViewModel() {
   // Opens InfoWindow and info-slide on click of list item
   // also closes API modal. Handles a click on already selected
   // location to close info-slide.
-  this.listClick = (loc) => {
-    var index = loc.id() - 1;
-    this.closeModal();
-    if(this.selectedLocation() != loc) {
-      this.selectedLocation(loc);
-      openInfoWindow(self.markers[index]);
+  this.listClick = (location) => {
+    if(this.selectedLocation() != location) {
+      this.selectedLocation(location);
     } else {
       this.selectedLocation(null);
     }
@@ -54,8 +51,8 @@ function ListViewModel() {
     this.wiki(false);
     this.yelp(false);
     this.flickr(true);
-    if(!selectedLocation().flickrUrls().length) {
-      moarFlickr();
+    if(!this.selectedLocation().flickrUrls().length) {
+      this.moarFlickr();
     }
   };
 
@@ -63,8 +60,9 @@ function ListViewModel() {
     this.flickr(false);
     this.yelp(false);
     this.wiki(true);
-    if(!selectedLocation().wikiText()) {
-      selectedLocation().getWiki();
+    if(!this.selectedLocation().wikiText()) {
+      this.selectedLocation().getWiki()
+      .catch(msg => document.getElementById('wiki-message').innerHTML = msg);
     }
   };
 
@@ -72,8 +70,8 @@ function ListViewModel() {
     this.flickr(false);
     this.wiki(false);
     this.yelp(true);
-    if(!selectedLocation().yelpData()) {
-      selectedLocation().getYelp();
+    if(!this.selectedLocation().yelpData()) {
+      this.selectedLocation().getYelp();
     }
   };
 
@@ -83,11 +81,12 @@ function ListViewModel() {
     this.yelp(false);
   };
 
+  // Triggers filter when text in input box changes
   this.filterText.subscribe(text => this.filter(text));
 
+  // Filters POI's
   this.filter = (text) => {
     text = text.toLowerCase();
-    console.log('change');
     if(text) {
       this.markers.forEach(marker => {
         if(marker.title.toLowerCase().indexOf(text) === -1) {
@@ -116,15 +115,15 @@ function ListViewModel() {
     if(!this.loading) {
       // this.loading is a stop to prevent additional requests from firing before the current one resolves
       this.loading = true;
-      let page = Math.round(selectedLocation().flickrUrls().length/10) + 1;
+      let page = Math.round(this.selectedLocation().flickrUrls().length/10) + 1;
       let loadDiv = document.getElementById('loading');
-      if(!selectedLocation().flickrUrls().length) {
+      if(!this.selectedLocation().flickrUrls().length) {
         loadDiv.innerHTML = 'Loading flickr photos';
       } else {
         loadDiv.innerHTML = 'Loading more photos';
       }
-      selectedLocation().getFlickr(page)
-      .then(data => selectedLocation().getFlickrUrls(data))
+      this.selectedLocation().getFlickr(page)
+      .then(data => this.selectedLocation().getFlickrUrls(data))
       .then(() => {
         loadDiv.innerHTML = '';
       })
@@ -142,7 +141,7 @@ function ListViewModel() {
     let modal = event.target;
     if(this.flickr()) {
       if(modal.scrollTop >= (modal.scrollHeight - modal.offsetHeight - 400)) {
-        moarFlickr();
+        this.moarFlickr();
       }
     } else if(this.loading){
     }
@@ -150,6 +149,45 @@ function ListViewModel() {
 
   this.openYelpReview = review => {
     window.open(review.url, '_blank');
+  };
+
+  // Updates infowindow when selectedLocation changes
+  this.selectedLocation.subscribe(location => {
+    if(!infowindow.marker && location) {
+      this.markers.forEach(marker => {
+        if(marker.title === location.title()) {
+          openInfoWindow(marker);
+        }
+      });
+    } else if(location === null) {
+      infowindow.close();
+      infowindow.marker.setAnimation(null);
+      infowindow.marker = null;
+    } else if(location.title() === infowindow.marker.title) {
+      return;
+    } else {
+      this.markers.forEach(marker => {
+        if(marker.title === location.title()) {
+          openInfoWindow(marker);
+        }
+      });
+    }
+  });
+
+  // Toggle list view on menu button click
+  this.toggleList = () => {
+    var viewportWidth = window.innerWidth;
+    var mapView = document.getElementById('map');
+    var target = document.getElementsByClassName('list-view')[0];
+    if(target.style.display === 'block') {
+      target.style.display = 'none';
+      mapView.style.display = 'block';
+    } else {
+      target.style.display = 'block';
+      if(viewportWidth < 750) {
+        mapView.style.display = 'none';
+      }
+    }
   };
 
 }
