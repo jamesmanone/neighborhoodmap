@@ -10,5 +10,4 @@ $(() => {
   }
   ko.applyBindings(viewModel);
   googleMap = new GoogleMap();
-  // makeMarkers();
 });

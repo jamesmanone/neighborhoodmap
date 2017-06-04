@@ -93,7 +93,7 @@ function ListViewModel() {
         }
       });
     } else {
-      this.markers.forEach(marker => marker.setVisible(true));
+      googleMap.markers.forEach(marker => marker.setVisible(true));
       this.locationList().forEach(location => location.visible(true));
     }
     return true;

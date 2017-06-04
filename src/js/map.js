@@ -36,8 +36,8 @@ class GoogleMap {
       this.infowindow.marker = marker;
       this.markers.forEach(marker => marker.setAnimation(null));
       if(this.infowindow.marker !== null) {
-        this.infowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
-        var clock = setTimeout(() => this.infowindow.marker.setAnimation(null), 4950);
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        var clock = setTimeout(() => marker.setAnimation(null), 2800);
         this.infowindow.setContent(marker.title);
         this.infowindow.addListener('closeclick', () => {
           this.markers.forEach(marker => marker.setAnimation(null));
@@ -77,7 +77,7 @@ class GoogleMap {
         }
       });
     } else if(!location && this.infowindow.marker) {
-      this.infowindow.marker.setAnimation(null);
+      this.markers.forEach(marker => marker.setAnimation(null));
       this.infowindow.marker = null;
       this.infowindow.close();
     } else if (!location && !this.infowindow.marker.title) {
