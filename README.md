@@ -5,13 +5,13 @@ ___
 
 ## Getting started
 
-Before using Neighborhood map you must install the dependencies. Neighborhood map requires that you have (node)[https://nodejs.org/en/download/] and npm (included with node). Once node is installed, you can clone this repository. To clone this, navigate to the folder you want this located in from a bash prompt(mac terminal or windows gitbash). From the prompt enter
+Before using Neighborhood map you must install the dependencies. Neighborhood map requires that you have [node](https://nodejs.org/en/download/) and npm (included with node). Once node is installed, you can clone this repository. To clone this, navigate to the folder you want this located in from a bash prompt(mac terminal or windows gitbash). From the prompt enter
 `git clone https://github.com/jamesmanone/neighborhoodmap.git`
 then enter
 `npm install`
 This will install the dependencies. You can then type
 `node server.js`
-to start the server. You can then view the project by visiting (http://localhost:3000)[http://localhost:3000].
+to start the server. You can then view the project by visiting [http://localhost:3000](http://localhost:3000).
 ___
 
 ## API's
