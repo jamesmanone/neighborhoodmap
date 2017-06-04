@@ -71,7 +71,8 @@ function ListViewModel() {
     this.wiki(false);
     this.yelp(true);
     if(!this.selectedLocation().yelpData()) {
-      this.selectedLocation().getYelp();
+      this.selectedLocation().getYelp()
+      .catch(msg => document.getElementsByClassName('yelp-loading')[0].innerHTML = msg);
     }
   };
 

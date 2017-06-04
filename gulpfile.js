@@ -1,9 +1,12 @@
-
+const uglifyes = require('uglify-es');
 const gulp = require('gulp');
 const path = require('path');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
-const babel = require('gulp-babel');
+const pump = require('pump');
+const composer = require('gulp-uglify/composer');
+
+const minify = composer(uglifyes, console);
 
 gulp.task('copyHtml', () => {
   gulp.src('./src/*.html')
@@ -16,15 +19,17 @@ gulp.task('copyCss', () => {
 });
 
 gulp.task('mangleJs', () => {
-  gulp.src([
-    './src/js/listviewmodel.js',
-    './src/js/model.js',
-    './src/js/map.js',
-    './src/js/init.js'
-  ])
-    .pipe(concat('app.js'))
-    .pipe(uglify())
-    .pipe(gulp.dest('./public/'));
+  pump([
+    gulp.src([
+      './src/js/listviewmodel.js',
+      './src/js/model.js',
+      './src/js/map.js',
+      './src/js/init.js'
+    ]),
+    concat('app.js'),
+    minify({mangle: false}),
+    gulp.dest('./public/')
+  ]);
 });
 
 gulp.task('default', ['copyHtml', 'copyCss', 'mangleJs']);

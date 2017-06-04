@@ -66,6 +66,7 @@ class Location {
   this.yelpReviews = ko.observableArray();
   }
 
+  // Gets Flickr image search results
   getFlickr(page) {
     return new Promise((resolve, reject) => {
       var clock = setTimeout(() => reject('Request Timed out'), 10000);
@@ -78,6 +79,8 @@ class Location {
     });
   }
 
+  // Takes Flicker image search results and requests urls for each (using getFlickrUrl).
+  // Resolves when all image urls have been fetched
   getFlickrUrls(data) {
     return new Promise((resolve, reject) => {
       let clock = setTimeout(() => reject('No photos were returned'), 10000);
@@ -91,6 +94,7 @@ class Location {
     });
   }
 
+  // Fetches individual Flickr image url from search result and pushes it to flickrUrls observable.
   getFlickrUrl(photo) {
     return new Promise((resolve, reject) => {
       fetch(`https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&format=json&nojsoncallback=1&api_key=0e1c35e1a3ae55371b56a4f54befe18e&photo_id=${photo.id}`)
@@ -113,6 +117,7 @@ class Location {
     });
   }
 
+  // Fetches wikipedia page using backend API relay
   getWiki() {
     return new Promise((resolve, reject) => {
       const clock = setTimeout(() => reject('The request timed out'), 7000);
@@ -153,28 +158,37 @@ class Location {
     });
   }
 
+  // Fetches yelp data using backend API relay
   getYelp() {
-    fetch(`/yelp?query=${this.title()}&lat=${this.location().lat}&lng=${this.location().lng}`)
-    .then(res => res.json())
-    .then(res => {
-      this.yelpRating(this.starsSrc(res.rating));
-      return res;
-    })
-    .then(res => {
-      this.yelpData(res);
-      return res;
-    })
-    .catch(e => console.log(e))
-    .then(res => fetch(`/yelpreviews/${res.id}`))
-    .then(res => res.json())
-    .then(res => {
-      res.reviews.forEach(review => review.ratingImg = this.starsSrc(review.rating));
-      return res;
-    })
-    .then(res => res.reviews.forEach(review => this.yelpReviews.push(review)))
-    .catch(e => console.log(e));
+    return new Promise((resolve, reject) => {
+      const clock = setTimeout(() => reject('The request timed out'), 10000);
+      fetch(`/yelp?query=${this.title()}&lat=${this.location().lat}&lng=${this.location().lng}`)
+      .then(res => res.json())
+      .catch(() => reject('There was a problem comunicating with yelp'))
+      .then(res => {
+        this.yelpRating(this.starsSrc(res.rating));
+        return res;
+      })
+      .then(res => {
+        this.yelpData(res);
+        return res;
+      })
+      .then(res => fetch(`/yelpreviews/${res.id}`))
+      .then(res => res.json())
+      .catch(() => reject('There was a problem getting reviews'))
+      .then(res => {
+        res.reviews.forEach(review => review.ratingImg = this.starsSrc(review.rating));
+        return res;
+      })
+      .then(res => res.reviews.forEach(review => this.yelpReviews.push(review)))
+      .then(() => {
+        clearTimeout(clock);
+        resolve();
+      });
+    });
   }
 
+  // Converts star rating to url for yelp star image
   starsSrc(rating) {
     let src = '/stars/';
     switch (rating) {

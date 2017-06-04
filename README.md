@@ -29,7 +29,7 @@ ___
 If you wish to make modifications to this program there are additional steps to take. The frontend source code is located in the `src` directory. Edits made here will not effect the program until the code is built. To do this you need gulp.
 ### How to modify the code
 If you do not have gulp, run the following command from the command line  
-`npm install -g gulp gulp-concat gulp-uglify`  
+`npm install -g gulp`  
 
 gulpfile.js contains several tasks for dealing with changes. Once changes have been made to the source code you can rebuild the public folder by running  
 `gulp`  
