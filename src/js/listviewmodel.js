@@ -77,7 +77,7 @@ function ListViewModel() {
   this.filter = (text) => {
     text = text.toLowerCase();
     if(text) {
-      this.markers.forEach(marker => {
+      googleMap.markers.forEach(marker => {
         if(marker.title.toLowerCase().indexOf(text) === -1) {
           marker.setVisible(false);
 
