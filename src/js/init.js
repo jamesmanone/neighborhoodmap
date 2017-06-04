@@ -1,4 +1,4 @@
-
+// viewmodel built outside binding call to maintain a reference to it
 const viewModel = new ListViewModel();
 
 // Set everything in motion

@@ -1,6 +1,7 @@
 
 var infowindow = new google.maps.InfoWindow();
 
+// Builds map
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: new google.maps.LatLng(27.772141, -82.637844),
@@ -8,7 +9,7 @@ function initMap() {
   });
 }
 
-
+// Makes map markers and pushes them to markers array
 function makeMarkers() {
   var bounds = new google.maps.LatLngBounds();
   for(let i=0; i<locations.length; i++) {
@@ -29,6 +30,7 @@ function makeMarkers() {
   map.fitBounds(bounds);
 }
 
+// Adds event listener to map markers. Taken from makeMarkers to clean up the code.
 function ears(marker) {
   marker.addListener('click', () => {
     syncList(marker);
@@ -37,7 +39,7 @@ function ears(marker) {
 }
 
 
-
+// Opens infowindow, sets marker
 function openInfoWindow(marker) {
   if(infowindow.marker != marker) {
     infowindow.marker = marker;
@@ -55,7 +57,7 @@ function openInfoWindow(marker) {
 }
 
 
-
+// Pushes updates to viewModel for a change in selected location
 function syncList(marker) {
   viewModel.locationList().forEach(location => {
     if(location.title() === marker.title) {

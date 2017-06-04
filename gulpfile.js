@@ -22,9 +22,8 @@ gulp.task('mangleJs', () => {
     './src/js/map.js',
     './src/js/init.js'
   ])
-    // .pipe(babel())
     .pipe(concat('app.js'))
-    // .pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest('./public/'));
 });
 

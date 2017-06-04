@@ -10,13 +10,7 @@ const app = express();
 // Set static dir
 app.use(express.static('public'));
 
-
-app.get('/', (req, res) => {
-  console.log(req);
-  res.send('<h1>Public Folder Error</h1>');
-  console.log('Error reaching static path');
-});
-
+// Returns business information to user
 app.get('/yelp', (req, res) => {
   const lat = req.query.lat;
   const lng = req.query.lng;
@@ -40,6 +34,7 @@ app.get('/yelp', (req, res) => {
   .then(obj => res.send(obj));
 });
 
+// Returns reviews to user
 app.get('/yelpreviews/:bizid', (req, res) => {
   yelp.reviews(req.params.bizid)
   .then(response => {
@@ -48,7 +43,7 @@ app.get('/yelpreviews/:bizid', (req, res) => {
   .catch(e => console.error(e));
 });
 
-// Server side relay to avoid JSONP and cors
+// Server side relay for wikipedia to avoid JSONP and cors
 app.get('/wiki', (req, res) => {
   fetch(`http://en.wikipedia.org/w/api.php?action=parse&prop=text&format=json&redirects=true&page=${req.query.page}`)
   .then(response => response.json())
@@ -58,7 +53,7 @@ app.get('/wiki', (req, res) => {
 
 // Start server
 app.listen(3000, () => {
-  let timestamp = new Date();
+  const timestamp = new Date();
   console.log(`Server started at ${timestamp}`);
   console.log('Listning on http://localhost:3000');
 });

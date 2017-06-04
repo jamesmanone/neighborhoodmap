@@ -53,16 +53,6 @@ const locations = [
   }
 ];
 
-// function Location(data) {
-//   var self = this;
-//   this.title = ko.observable(data.title);
-//   this.location = ko.observable(data.location);
-//   this.id = ko.observable(data.id);
-//   this.wikiText = ko.observable('');
-//   this.flickrUrls = ko.observableArray();
-
-// }
-
 class Location {
   constructor(data) {
   this.title = ko.observable(data.title);
