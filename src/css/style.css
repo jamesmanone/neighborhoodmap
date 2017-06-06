@@ -91,7 +91,6 @@ nav {
 }
 
 .list-view {
-  display: none;
   width: 30%;
   height: 100%;
   margin: 0;
@@ -149,7 +148,7 @@ nav {
 
 .title {
   color: #ddd;
-   background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.3);
   margin: 0;
   width: 85%;
   padding: 0 0 0 5px;
@@ -210,7 +209,6 @@ nav {
   padding: 0;
   margin: 0;
   width: 100%;
-  position: absolute;
 }
 
 .flickr-img-item {

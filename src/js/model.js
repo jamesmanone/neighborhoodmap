@@ -84,15 +84,21 @@ class Location {
   // Resolves when all image urls have been fetched
   getFlickrUrls(data) {
     return new Promise((resolve, reject) => {
-      let clock = setTimeout(() => reject('No photos were returned'), 10000);
+      var clock = setTimeout(() => reject('The request timed out'), 10000);
       let promises = [];
       let photos = data.photos.photo;
       photos.forEach(photo => this.getFlickrUrl(photo));
     })
     .then(() => {
-      Promise.all(promises)
-      .then(resolve)
-      .catch(e => reject('Unable to fetch photos'));
+      Promise.race(promises)
+      .then(() => {
+        clearTimeout(clock);
+        resolve();
+      })
+      .catch(e => {
+        clearTimeout(clock);
+        reject('Unable to fetch photos');
+      });
     });
   }
 
@@ -111,6 +117,10 @@ class Location {
             if(size.width === '640') {
               this.flickrUrls.push(size.source);
               resolve(true);
+              if(viewModel.flickr() && (viewModel.flickrMessage() || viewModel.modalStatus())) {
+                viewModel.flickrMessage('');
+                viewModel.modalStatus('');
+              }
               break;
             }
           }

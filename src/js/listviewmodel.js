@@ -19,7 +19,19 @@ function ListViewModel() {
   this.flickr = ko.observable(false);
   this.wiki = ko.observable(false);
   this.yelp = ko.observable(false);
+  this.modalTitle = ko.observable();
+  this.modalStatus = ko.observable();
+  this.flickrMessage = ko.observable();
   this.modalOpen = ko.computed( () => this.flickr() || this.wiki() || this.yelp());
+  this.listOpen = ko.observable(false);
+  this.mapOpen = ko.computed( () => {
+    let viewportWidth = window.innerWidth;
+    if(viewportWidth > 750) {
+      return true;
+    } else {
+      return !this.listOpen();
+    }
+  });
 
 
   // Opens InfoWindow and info-slide on click of list item
@@ -28,18 +40,32 @@ function ListViewModel() {
   this.listClick = location => {
     if(this.selectedLocation() != location) {
       this.selectedLocation(location);
-      googleMap.setMarkerFromList(location);
+      if(googleMap && googleMap.markers) {
+        googleMap.setMarkerFromList(location);
+      }
     } else {
       this.selectedLocation(null);
-      googleMap.setMarkerFromList(null);
+      if(googleMap && googleMap.markers) {
+        googleMap.setMarkerFromList(null);
+      }
     }
   };
+
+  // Fit map to markers on list open/close
+  this.listOpen.subscribe(() => {
+    if(window.innerWidth > 750 && googleMap) {
+      googleMap.resize();
+    }
+  });
 
   this.openFlickr = () => {
     this.wiki(false);
     this.yelp(false);
     this.flickr(true);
+    this.modalTitle('Flickr Images');
+    this.modalStatus('');
     if(!this.selectedLocation().flickrUrls().length) {
+      this.modalStatus('Loading...');
       this.moarFlickr();
     }
   };
@@ -48,9 +74,13 @@ function ListViewModel() {
     this.flickr(false);
     this.yelp(false);
     this.wiki(true);
+    this.modalTitle('Wikipedia');
+    this.modalStatus('');
     if(!this.selectedLocation().wikiText()) {
+      this.modalStatus('Loading...');
       this.selectedLocation().getWiki()
-      .catch(msg => document.getElementById('wiki-message').innerHTML = msg);
+      .then(() => this.modalStatus(''))
+      .catch(msg => this.modalStatus(msg));
     }
   };
 
@@ -58,9 +88,13 @@ function ListViewModel() {
     this.flickr(false);
     this.wiki(false);
     this.yelp(true);
+    this.modalTitle('');
+    this.modalStatus('');
     if(!this.selectedLocation().yelpData()) {
+      this.modalStatus('Loading...');
       this.selectedLocation().getYelp()
-      .catch(msg => document.getElementsByClassName('yelp-loading')[0].innerHTML = msg);
+      .then(() => this.modalStatus(''))
+      .catch(msg => this.modalStatus(msg));
     }
   };
 
@@ -77,14 +111,16 @@ function ListViewModel() {
   this.filter = (text) => {
     text = text.toLowerCase();
     if(text) {
-      googleMap.markers.forEach(marker => {
-        if(marker.title.toLowerCase().indexOf(text) === -1) {
-          marker.setVisible(false);
+      if(googleMap && googleMap.markers) {
+        googleMap.markers.forEach(marker => {
+          if(marker.title.toLowerCase().indexOf(text) === -1) {
+            marker.setVisible(false);
 
-        } else {
-          marker.setVisible(true);
-        }
-      });
+          } else {
+            marker.setVisible(true);
+          }
+        });
+      }
       this.locationList().forEach(location => {
         if(location.title().toLowerCase().indexOf(text) === -1) {
           location.visible(false);
@@ -93,7 +129,9 @@ function ListViewModel() {
         }
       });
     } else {
-      googleMap.markers.forEach(marker => marker.setVisible(true));
+      if(googleMap && googleMap.markers) {
+        googleMap.markers.forEach(marker => marker.setVisible(true));
+      }
       this.locationList().forEach(location => location.visible(true));
     }
     return true;
@@ -105,19 +143,21 @@ function ListViewModel() {
       // this.loading is a stop to prevent additional requests from firing before the current one resolves
       this.loading = true;
       let page = Math.round(this.selectedLocation().flickrUrls().length/10) + 1;
-      let loadDiv = document.getElementById('loading');
-      if(!this.selectedLocation().flickrUrls().length) {
-        loadDiv.innerHTML = 'Loading flickr photos';
+      let preExistingFlickr = this.selectedLocation().flickrUrls().length;
+      if(!preExistingFlickr) {
+        this.modalStatus('Loading...');
       } else {
-        loadDiv.innerHTML = 'Loading more photos';
+        this.flickrMessage('Loading more photos');
       }
       this.selectedLocation().getFlickr(page)
       .then(data => this.selectedLocation().getFlickrUrls(data))
       .then(() => {
-        loadDiv.innerHTML = '';
+        this.flickrMessage('');
+        this.modalStatus('');
       })
       .catch(errorMessage => {
-        loadDiv.innerHTML = `Error: ${errorMessage}`;
+        console.error(errorMessage);
+        this.flickrMessage(`Error: ${errorMessage}`);
       })
       .then(() => {
         this.loading = false;
@@ -141,29 +181,9 @@ function ListViewModel() {
     window.open(review.url, '_blank');
   };
 
-  // // Updates infowindow when selectedLocation changes
-  // this.selectedLocation.subscribe(location => {
-  //   if(location.title() === googleMap.infowindow.marker.title) {
-  //     return;
-  //   } else {
-  //     googleMap.setMarkerFromList(location);
-  //   }
-  // });
-
   // Toggle list view on menu button click
   this.toggleList = () => {
-    var viewportWidth = window.innerWidth;
-    var mapView = document.getElementById('map');
-    var target = document.getElementsByClassName('list-view')[0];
-    if(target.style.display === 'block') {
-      target.style.display = 'none';
-      mapView.style.display = 'block';
-    } else {
-      target.style.display = 'block';
-      if(viewportWidth < 750) {
-        mapView.style.display = 'none';
-      }
-    }
+    this.listOpen(!this.listOpen());
   };
 
 }

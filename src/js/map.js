@@ -3,11 +3,12 @@ class GoogleMap {
   constructor() {
     this.map = new google.maps.Map(document.getElementById('map'), {
       center: new google.maps.LatLng(27.772141, -82.637844),
-      zoom: 14
+      zoom: 1
     });
     this.infowindow = new google.maps.InfoWindow();
     this.bounds = new google.maps.LatLngBounds();
     this.markers = [];
+    this.resizeTimeout = false;
 
     // Making markers
     for(let i=0; i<locations.length; i++) {
@@ -26,6 +27,7 @@ class GoogleMap {
       this.bounds.extend(position);
     }
     this.map.fitBounds(this.bounds);
+    window.addEventListener('resize', this.resize.bind(this));
   }
 
   // methods
@@ -47,6 +49,17 @@ class GoogleMap {
         });
         this.infowindow.open(map, marker);
       }
+    }
+  }
+
+  // Fit map to markers on resize
+  resize() {
+    if(!this.resizeTimeout) {
+      console.log(this.resizeTimeout);
+      this.resizeTimeout = true;
+      setTimeout(() => this.resizeTimeout = false, 66);
+      this.map.zoom = 1;
+      this.map.fitBounds(this.bounds);
     }
   }
 

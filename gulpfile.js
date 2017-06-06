@@ -24,13 +24,13 @@ gulp.task('copyCss', () => {
 gulp.task('mangleJs', () => {
   pump([
     gulp.src([
-      './src/js/listviewmodel.js',
       './src/js/model.js',
+      './src/js/listviewmodel.js',
       './src/js/map.js',
       './src/js/init.js'
     ]),
+    minify(),
     concat('app.js'),
-    minify({mangle: false}),
     gulp.dest('./public/')
   ]);
 });
